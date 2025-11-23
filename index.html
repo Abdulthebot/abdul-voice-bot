@@ -7,13 +7,13 @@
   <style>
     :root {
       color-scheme: dark;
-      --bg: #020617;
-      --bg-elevated: #020617;
-      --surface: #020617;
+      --bg: #050816;
+      --panel: #050816;
+      --surface: #0b1120;
+      --surface-elevated: #020617;
       --border-subtle: #1f2937;
       --border-strong: #334155;
       --primary: #3b82f6;
-      --primary-soft: rgba(59, 130, 246, 0.12);
       --text-main: #e5e7eb;
       --text-muted: #9ca3af;
     }
@@ -24,95 +24,85 @@
         "SF Pro Text", "Segoe UI", sans-serif;
     }
 
-    body {
+    html, body {
       margin: 0;
-      min-height: 100vh;
+      padding: 0;
+      height: 100%;
+      background: radial-gradient(circle at 0 0, #020617 0, #050816 45%, #000 100%);
+      color: var(--text-main);
+    }
+
+    body {
       display: flex;
       justify-content: center;
-      align-items: center;
-      background:
-        radial-gradient(circle at 0 0, #0b1120 0, #020617 35%, #000 100%);
-      color: var(--text-main);
-      padding: 16px;
+      align-items: stretch;
     }
 
-    .shell {
+    .app {
       width: 100%;
-      max-width: 720px;
-      animation: card-enter 0.35s ease-out both;
-    }
-
-    @keyframes card-enter {
-      from {
-        opacity: 0;
-        transform: translateY(10px) scale(0.99);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    .card {
-      background: rgba(15, 23, 42, 0.96);
-      border-radius: 16px;
-      border: 1px solid rgba(31, 41, 55, 0.9);
-      box-shadow: 0 22px 45px rgba(0, 0, 0, 0.65);
-      padding: 16px 16px 12px;
+      max-width: 960px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      height: 100%;
+      background: transparent;
     }
 
-    .header-row {
+    /* Top bar like ChatGPT */
+    .top-bar {
+      height: 52px;
+      padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      background: linear-gradient(to bottom, #020617, rgba(2, 6, 23, 0.9));
+      border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.6);
     }
 
-    h1 {
-      font-size: 1.35rem;
+    .top-title {
+      font-size: 1.05rem;
       font-weight: 600;
       letter-spacing: -0.01em;
-      margin: 0;
     }
 
-    .tag {
-      padding: 4px 10px;
+    .top-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .top-right {
+      font-size: 0.72rem;
+      padding: 3px 9px;
       border-radius: 999px;
       border: 1px solid rgba(148, 163, 184, 0.5);
-      font-size: 0.72rem;
       color: #cbd5f5;
       background: linear-gradient(
         135deg,
-        rgba(31, 41, 55, 0.9),
-        rgba(15, 23, 42, 0.9)
+        rgba(15, 23, 42, 0.95),
+        rgba(15, 23, 42, 0.8)
       );
       white-space: nowrap;
     }
 
-    .subtitle {
-      font-size: 0.84rem;
-      color: var(--text-muted);
-      line-height: 1.45;
-    }
-
-    .layout {
+    /* Main chat area */
+    .main {
+      flex: 1;
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-      height: 420px;
+      justify-content: center;
+      padding: 12px 10px 8px;
+      overflow: hidden;
     }
 
     .chat-window {
-      flex: 1;
-      background: var(--bg-elevated);
-      border-radius: 12px;
-      border: 1px solid var(--border-subtle);
-      padding: 10px;
+      width: 100%;
+      max-width: 720px;
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: 16px;
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      padding: 10px 12px;
       overflow-y: auto;
       font-size: 0.9rem;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.75);
     }
 
     .bubble {
@@ -136,8 +126,8 @@
 
     .bubble.user {
       margin-left: auto;
-      background: rgba(37, 99, 235, 0.15);
-      border: 1px solid rgba(37, 99, 235, 0.4);
+      background: rgba(37, 99, 235, 0.18);
+      border: 1px solid rgba(37, 99, 235, 0.5);
     }
 
     .bubble.bot {
@@ -146,19 +136,73 @@
       border: 1px solid var(--border-subtle);
     }
 
-    .status {
+    .status-line {
+      max-width: 720px;
+      margin: 4px auto 0;
       font-size: 0.78rem;
       color: var(--text-muted);
       min-height: 18px;
+      padding: 0 12px;
+    }
+
+    /* Bottom input panel like ChatGPT */
+    .bottom-panel {
+      border-top: 1px solid rgba(31, 41, 55, 0.9);
+      background: radial-gradient(circle at top, #020617 0, #050816 55%);
+      padding: 6px 10px 10px;
+    }
+
+    .bottom-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: #020617;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.05rem;
+      transition:
+        background 0.08s ease,
+        border-color 0.08s ease,
+        transform 0.08s ease;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--primary);
+      background: #020b1f;
+    }
+
+    .icon-btn.recording {
+      background: rgba(220, 38, 38, 0.18);
+      border-color: rgba(248, 113, 113, 0.95);
+      color: #fecaca;
     }
 
     .input-shell {
+      flex: 1;
+      display: flex;
+      align-items: center;
       border-radius: 999px;
       border: 1px solid var(--border-strong);
       background: #020617;
-      display: flex;
-      align-items: center;
-      padding: 3px 4px;
+      padding: 4px 4px 4px 10px;
       gap: 6px;
       transition:
         border-color 0.12s ease,
@@ -181,7 +225,7 @@
       color: var(--text-main);
       font-size: 0.9rem;
       resize: none;
-      padding: 6px 8px;
+      padding: 4px 2px 4px 0;
       max-height: 80px;
     }
 
@@ -193,64 +237,32 @@
       outline: none;
     }
 
-    .controls-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    button {
+    #sendBtn {
       border-radius: 999px;
-      border: 1px solid transparent;
-      padding: 7px 13px;
+      border: 1px solid rgba(37, 99, 235, 0.9);
+      background: var(--primary);
+      color: #f9fafb;
       font-size: 0.86rem;
+      padding: 7px 14px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      background: transparent;
-      color: var(--text-main);
       transition:
         background 0.08s ease,
-        border-color 0.08s ease,
         transform 0.08s ease,
         box-shadow 0.08s ease,
         opacity 0.08s ease;
-    }
-
-    button:active {
-      transform: scale(0.97) translateY(0.5px);
-      box-shadow: none;
-    }
-
-    #recordBtn {
-      background: #020617;
-      border-color: var(--border-subtle);
-      padding-inline: 12px;
-    }
-
-    #recordBtn:hover {
-      border-color: var(--primary);
-      background: #020b1f;
-    }
-
-    #recordBtn.recording {
-      background: rgba(220, 38, 38, 0.16);
-      border-color: rgba(248, 113, 113, 0.9);
-      color: #fecaca;
-    }
-
-    #sendBtn {
-      background: var(--primary);
-      color: #f9fafb;
-      padding-inline: 16px;
-      border-color: rgba(37, 99, 235, 0.9);
-      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.45);
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.45);
     }
 
     #sendBtn:hover {
       background: #2563eb;
+    }
+
+    #sendBtn:active {
+      transform: scale(0.97) translateY(0.5px);
+      box-shadow: none;
     }
 
     #sendBtn:disabled {
@@ -260,10 +272,8 @@
     }
 
     .hint {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
-      line-height: 1.4;
-      margin-top: 2px;
     }
 
     .hint strong {
@@ -271,42 +281,62 @@
       font-weight: 500;
     }
 
-    @media (max-width: 520px) {
-      .card {
-        border-radius: 14px;
-        padding: 14px 12px 10px;
-      }
+    .voice-tuning {
+      font-size: 0.74rem;
+      color: #6b7280;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
 
-      .layout {
-        height: 420px;
+    .voice-tuning span {
+      color: #9ca3af;
+    }
+
+    .voice-tuning label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .voice-tuning input[type="range"] {
+      accent-color: #3b82f6;
+    }
+
+    @media (max-width: 640px) {
+      .chat-window {
+        border-radius: 12px;
       }
     }
   </style>
 </head>
 <body>
-<div class="shell">
-  <div class="card">
-    <div class="header-row">
-      <h1>Abdul Voice</h1>
-      <div class="tag">Real-time profile</div>
+<div class="app">
+  <header class="top-bar">
+    <div>
+      <div class="top-title">Abdul Voice</div>
+      <div class="top-sub">Personal voice bot · GenAI assessment</div>
     </div>
-    <div class="subtitle">
-      This bot responds as Abdul Hameed in his own words. Ask about his story, superpower,
-      growth areas, misconceptions, or how he pushes his limits. Use voice or text.
-    </div>
+    <div class="top-right">Real-time profile</div>
+  </header>
 
-    <div class="layout">
-      <div id="chat" class="chat-window"></div>
-      <div class="status" id="status"></div>
+  <main class="main">
+    <div id="chat" class="chat-window"></div>
+  </main>
 
-      <div class="input-shell" id="inputShell">
-        <textarea
-          id="textInput"
-          rows="1"
-          placeholder="Example: What should we know about your life story in a few sentences?"
-        ></textarea>
-        <div class="controls-row">
-          <button id="recordBtn">🎙</button>
+  <div class="status-line" id="status"></div>
+
+  <section class="bottom-panel">
+    <div class="bottom-inner">
+      <div class="input-row">
+        <button id="recordBtn" class="icon-btn">🎙</button>
+        <div class="input-shell" id="inputShell">
+          <textarea
+            id="textInput"
+            rows="1"
+            placeholder="Example: What should we know about your life story in a few sentences?"
+          ></textarea>
           <button id="sendBtn">Send</button>
         </div>
       </div>
@@ -315,8 +345,18 @@
         <strong>Try asking:</strong> “What is your #1 superpower?”, “What are the top 3 areas you’d like to grow in?”,
         or “What misconceptions do people have about you?”.
       </div>
+
+      <div class="voice-tuning">
+        <span>Voice tuning:</span>
+        <label>Speed
+          <input id="rateSlider" type="range" min="0.7" max="1.2" step="0.02" value="0.9">
+        </label>
+        <label>Tone
+          <input id="pitchSlider" type="range" min="0.7" max="1.3" step="0.02" value="0.9">
+        </label>
+      </div>
     </div>
-  </div>
+  </section>
 </div>
 
 <script>
@@ -326,6 +366,10 @@
   const inputShell = document.getElementById("inputShell");
   const recordBtn = document.getElementById("recordBtn");
   const sendBtn = document.getElementById("sendBtn");
+  const rateSlider = document.getElementById("rateSlider");
+  const pitchSlider = document.getElementById("pitchSlider");
+
+  // ---------- CHAT UI ----------
 
   function addBubble(text, sender) {
     const div = document.createElement("div");
@@ -333,8 +377,6 @@
     div.textContent = text;
     chatEl.appendChild(div);
     chatEl.scrollTop = chatEl.scrollHeight;
-
-    // trigger animation next frame
     requestAnimationFrame(() => {
       div.classList.add("visible");
     });
@@ -353,17 +395,8 @@
     }
   }
 
-  // Text-to-speech for bot replies
-  function speak(text) {
-    if (!("speechSynthesis" in window)) return;
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.rate = 1.02;
-    utter.pitch = 1.0;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(utter);
-  }
+  // ---------- TEXTAREA AUTOSIZE + FOCUS ----------
 
-  // Auto-resize textarea like GPT
   function autoResize() {
     textInput.style.height = "auto";
     const maxHeight = 80;
@@ -378,7 +411,60 @@
     inputShell.classList.remove("focused")
   );
 
-  // Speech recognition for user
+  // ---------- VOICE OUTPUT (TTS) ----------
+
+  let currentVoice = null;
+  let currentRate = parseFloat(localStorage.getItem("abdul_rate") || "0.9");
+  let currentPitch = parseFloat(localStorage.getItem("abdul_pitch") || "0.9");
+
+  if (rateSlider) rateSlider.value = currentRate;
+  if (pitchSlider) pitchSlider.value = currentPitch;
+
+  function pickVoice() {
+    if (!("speechSynthesis" in window)) return;
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices || !voices.length) return;
+
+    const preferred = voices.find(v =>
+      /india|en-IN|english india/i.test(v.name + " " + v.lang)
+    );
+    const backup = voices.find(v =>
+      /english/i.test(v.lang) && /male|deep|natural/i.test(v.name)
+    );
+    currentVoice = preferred || backup || voices[0];
+  }
+
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.onvoiceschanged = pickVoice;
+    setTimeout(pickVoice, 200);
+  }
+
+  function speak(text) {
+    if (!("speechSynthesis" in window)) return;
+    const utter = new SpeechSynthesisUtterance(text);
+    if (currentVoice) utter.voice = currentVoice;
+    utter.rate = currentRate;
+    utter.pitch = currentPitch;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter);
+  }
+
+  if (rateSlider) {
+    rateSlider.addEventListener("input", () => {
+      currentRate = parseFloat(rateSlider.value);
+      localStorage.setItem("abdul_rate", currentRate.toString());
+    });
+  }
+
+  if (pitchSlider) {
+    pitchSlider.addEventListener("input", () => {
+      currentPitch = parseFloat(pitchSlider.value);
+      localStorage.setItem("abdul_pitch", currentPitch.toString());
+    });
+  }
+
+  // ---------- SPEECH RECOGNITION (MIC) ----------
+
   let recognition = null;
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -433,11 +519,13 @@
     recordBtn.addEventListener("touchend", stopListening);
   } else {
     recordBtn.disabled = true;
-    recordBtn.textContent = "Mic off";
+    recordBtn.textContent = "Mic";
     setStatus(
       "Your browser does not support microphone input. Please type your questions."
     );
   }
+
+  // ---------- SEND MESSAGE ----------
 
   async function sendMessage() {
     const text = textInput.value.trim();
@@ -478,7 +566,8 @@
     }
   });
 
-  // Initial welcome message
+  // ---------- INITIAL MESSAGE ----------
+
   addBubble(
     "Hi, I am Abdul’s voice bot. Ask me about my life story, my superpower, how I push my limits, or what people often misunderstand about me.",
     "bot"
