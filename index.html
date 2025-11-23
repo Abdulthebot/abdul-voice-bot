@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Abdul Voice – Professional AI Interview Bot</title>
+  <title>Abdul Voice</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     * {
@@ -165,11 +165,11 @@
 <div class="card">
   <div class="header-row">
     <h1>Abdul Voice</h1>
-    <div class="tag">Generative AI – Interview Simulator</div>
+    <div class="tag">Real-time voice profile</div>
   </div>
   <div class="subtitle">
-    Ask questions as if you are interviewing Abdul for a Generative AI Developer role.
-    You can use voice or text. No setup required.
+    This bot answers as Abdul Hameed in his own words. Ask about his journey, superpower,
+    growth areas, misconceptions, or how he pushes his limits. Use voice or text.
   </div>
 
   <div id="chat" class="chat-window"></div>
@@ -186,7 +186,7 @@
   </div>
 
   <div class="hint">
-    <strong>Tips:</strong> Try questions like “What is your superpower?”, “How do you push your limits?”,
+    <strong>Try asking:</strong> “What is your #1 superpower?”, “What are the top 3 areas you want to grow in?”,
     or “What misconceptions do people have about you?”.
   </div>
 </div>
@@ -270,7 +270,6 @@
     recordBtn.addEventListener("mousedown", startListening);
     recordBtn.addEventListener("mouseup", stopListening);
     recordBtn.addEventListener("mouseleave", stopListening);
-
     recordBtn.addEventListener(
       "touchstart",
       (e) => {
@@ -320,9 +319,9 @@
     }
   });
 
-  // Initial welcome message
+  // Initial message
   addBubble(
-    "Hello, I am Abdul's voice assistant. You can ask me about my life story, superpower, growth areas, misconceptions, or how I push my limits as a Generative AI developer.",
+    "Hi, I am Abdul’s voice bot. Ask me about my life story, my superpower, how I push my limits, or what people often misunderstand about me.",
     "bot"
   );
 </script>
