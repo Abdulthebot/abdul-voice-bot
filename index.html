@@ -2,14 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Abdul Voice – GenAI Assessment</title>
+  <title>Abdul Voice – Professional AI Interview Bot</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
     body {
       margin: 0;
       padding: 0;
-      background: #050816;
+      background: radial-gradient(circle at top, #111827 0, #020617 55%, #000 100%);
       color: #f9fafb;
       display: flex;
       align-items: center;
@@ -17,19 +20,36 @@
       min-height: 100vh;
     }
     .card {
-      background: #0b1120;
-      border-radius: 18px;
-      box-shadow: 0 18px 45px rgba(0,0,0,0.5);
-      max-width: 480px;
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 20px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+      max-width: 520px;
       width: 100%;
       padding: 20px 18px 18px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+    }
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 4px;
     }
     h1 {
-      font-size: 1.4rem;
-      margin: 0 0 4px;
+      font-size: 1.35rem;
+      margin: 0;
+    }
+    .tag {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      color: #bfdbfe;
+      white-space: nowrap;
     }
     .subtitle {
-      font-size: 0.86rem;
+      font-size: 0.84rem;
       color: #9ca3af;
       margin-bottom: 14px;
     }
@@ -54,14 +74,16 @@
     .bubble.user {
       margin-left: auto;
       background: #1d4ed8;
+      color: #e5e7eb;
     }
     .bubble.bot {
       margin-right: auto;
-      background: #111827;
+      background: #020617;
       border: 1px solid #1f2937;
+      color: #e5e7eb;
     }
     .status {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: #9ca3af;
       min-height: 18px;
       margin-bottom: 6px;
@@ -77,6 +99,9 @@
       font-size: 0.9rem;
       min-height: 46px;
       margin-bottom: 8px;
+    }
+    textarea::placeholder {
+      color: #6b7280;
     }
     textarea:focus {
       outline: none;
@@ -94,41 +119,66 @@
       cursor: pointer;
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
+      transition: transform 0.06s ease, box-shadow 0.06s ease, background 0.06s ease;
+    }
+    button:active {
+      transform: scale(0.98);
+      box-shadow: none;
     }
     #recordBtn {
       flex: 1;
       background: #111827;
       color: #e5e7eb;
       border: 1px solid #374151;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
     }
     #recordBtn.recording {
       background: #b91c1c;
       border-color: #fecaca;
+      color: #fee2e2;
     }
     #sendBtn {
       background: #2563eb;
       color: white;
       padding-inline: 16px;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
+    }
+    #sendBtn:disabled {
+      opacity: 0.6;
+      cursor: default;
+      box-shadow: none;
     }
     .hint {
       font-size: 0.78rem;
       color: #6b7280;
       margin-top: 6px;
     }
+    .hint strong {
+      color: #9ca3af;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
 <div class="card">
-  <h1>Abdul Voice</h1>
+  <div class="header-row">
+    <h1>Abdul Voice</h1>
+    <div class="tag">Generative AI – Interview Simulator</div>
+  </div>
   <div class="subtitle">
-    Hold the mic button and ask a question, or type and press Send.
+    Ask questions as if you are interviewing Abdul for a Generative AI Developer role.
+    You can use voice or text. No setup required.
   </div>
 
   <div id="chat" class="chat-window"></div>
   <div id="status" class="status"></div>
 
-  <textarea id="textInput" placeholder="Ask me something like: What's your #1 superpower?"></textarea>
+  <textarea
+    id="textInput"
+    placeholder="Example: What should we know about your life story in a few sentences?"
+  ></textarea>
 
   <div class="row">
     <button id="recordBtn">🎙 Hold to speak</button>
@@ -136,32 +186,42 @@
   </div>
 
   <div class="hint">
-    Built for 100x – simple, no setup, works in a browser with mic access.
+    <strong>Tips:</strong> Try questions like “What is your superpower?”, “How do you push your limits?”,
+    or “What misconceptions do people have about you?”.
   </div>
 </div>
 
 <script>
-  const chatEl = document.getElementById('chat');
-  const statusEl = document.getElementById('status');
-  const textInput = document.getElementById('textInput');
-  const recordBtn = document.getElementById('recordBtn');
-  const sendBtn = document.getElementById('sendBtn');
+  const chatEl = document.getElementById("chat");
+  const statusEl = document.getElementById("status");
+  const textInput = document.getElementById("textInput");
+  const recordBtn = document.getElementById("recordBtn");
+  const sendBtn = document.getElementById("sendBtn");
 
   function addBubble(text, sender) {
-    const div = document.createElement('div');
-    div.className = 'bubble ' + sender;
+    const div = document.createElement("div");
+    div.className = "bubble " + sender;
     div.textContent = text;
     chatEl.appendChild(div);
     chatEl.scrollTop = chatEl.scrollHeight;
   }
 
   function setStatus(text) {
-    statusEl.textContent = text || '';
+    statusEl.textContent = text || "";
   }
 
-  // --- Text-to-speech (bot voice) ---
+  function setLoading(isLoading) {
+    sendBtn.disabled = isLoading;
+    if (isLoading) {
+      setStatus("Thinking…");
+    } else {
+      setStatus("");
+    }
+  }
+
+  // Text-to-speech for bot replies
   function speak(text) {
-    if (!('speechSynthesis' in window)) return;
+    if (!("speechSynthesis" in window)) return;
     const utter = new SpeechSynthesisUtterance(text);
     utter.rate = 1.02;
     utter.pitch = 1.0;
@@ -169,24 +229,24 @@
     speechSynthesis.speak(utter);
   }
 
-  // --- Speech recognition (user voice) ---
+  // Speech recognition for user
   let recognition = null;
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   if (SpeechRecognition) {
     recognition = new SpeechRecognition();
-    recognition.lang = 'en-IN';
+    recognition.lang = "en-IN";
     recognition.interimResults = false;
 
-    recognition.onstart = () => setStatus('Listening…');
+    recognition.onstart = () => setStatus("Listening…");
     recognition.onend = () => {
-      setStatus('');
-      recordBtn.classList.remove('recording');
+      setStatus("");
+      recordBtn.classList.remove("recording");
     };
     recognition.onerror = (e) => {
       console.error(e);
-      setStatus('Could not capture audio. You can type instead.');
-      recordBtn.classList.remove('recording');
+      setStatus("Could not capture audio. You can type your question instead.");
+      recordBtn.classList.remove("recording");
     };
     recognition.onresult = (e) => {
       const transcript = e.results[0][0].transcript;
@@ -198,62 +258,73 @@
       try {
         speechSynthesis.cancel();
         recognition.start();
-        recordBtn.classList.add('recording');
+        recordBtn.classList.add("recording");
       } catch (e) {}
     };
     const stopListening = () => {
-      try { recognition.stop(); } catch (e) {}
+      try {
+        recognition.stop();
+      } catch (e) {}
     };
 
-    recordBtn.addEventListener('mousedown', startListening);
-    recordBtn.addEventListener('mouseup', stopListening);
-    recordBtn.addEventListener('mouseleave', stopListening);
-    recordBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      startListening();
-    }, { passive: false });
-    recordBtn.addEventListener('touchend', stopListening);
+    recordBtn.addEventListener("mousedown", startListening);
+    recordBtn.addEventListener("mouseup", stopListening);
+    recordBtn.addEventListener("mouseleave", stopListening);
+
+    recordBtn.addEventListener(
+      "touchstart",
+      (e) => {
+        e.preventDefault();
+        startListening();
+      },
+      { passive: false }
+    );
+    recordBtn.addEventListener("touchend", stopListening);
   } else {
     recordBtn.disabled = true;
-    recordBtn.textContent = 'No mic support on this browser';
-    setStatus('Voice input is not supported here. You can still type.');
+    recordBtn.textContent = "Voice input not supported";
+    setStatus("Your browser does not support microphone input. Please type your questions.");
   }
 
-  // --- Send message to backend ---
   async function sendMessage() {
     const text = textInput.value.trim();
     if (!text) return;
-    textInput.value = '';
-    addBubble(text, 'user');
-    setStatus('Thinking…');
+    textInput.value = "";
+    addBubble(text, "user");
+    setLoading(true);
 
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text })
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
       });
+
       const data = await res.json();
-      const reply = data.reply || 'Sorry, something went wrong.';
-      addBubble(reply, 'bot');
+      const reply = data.reply || "I could not generate a response for that question.";
+      addBubble(reply, "bot");
       speak(reply);
-      setStatus('');
     } catch (err) {
       console.error(err);
-      setStatus('Error talking to Abdul Voice.');
+      addBubble("There was an error contacting the server. Please try again.", "bot");
+    } finally {
+      setLoading(false);
     }
   }
 
-  sendBtn.addEventListener('click', sendMessage);
-  textInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+  sendBtn.addEventListener("click", sendMessage);
+  textInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   });
 
   // Initial welcome message
-  addBubble("Salaam, I’m Abdul’s voice bot. Ask me about my life story, superpower, or how I push my limits.", "bot");
+  addBubble(
+    "Hello, I am Abdul's voice assistant. You can ask me about my life story, superpower, growth areas, misconceptions, or how I push my limits as a Generative AI developer.",
+    "bot"
+  );
 </script>
 </body>
 </html>
