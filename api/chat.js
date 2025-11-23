@@ -1,33 +1,18 @@
 // ============================================================================
-//  ADVANCED BACKEND FOR PROFESSIONAL VOICE BOT (GROQ + STRUCTURED ARCHITECTURE)
-//  Description: Production-style serverless backend with layered validation,
-//  centralized prompt, robust error handling, and structured logging.
+//  BACKEND FOR ABDUL VOICE (GROQ)
+//  - Uses Groq LLaMA-3.1-8B-Instant
+//  - Strong input validation & logging
+//  - System prompt tuned to Abdul's real personality
 // ============================================================================
 
-// -----------------------------
-//   CONSTANTS & HELPERS
-// -----------------------------
+const HEADERS = { "Content-Type": "application/json" };
 
-const HEADERS = {
-  "Content-Type": "application/json",
-};
+const ts = () => new Date().toISOString();
 
-// ISO timestamp for logs
-const timestamp = () => new Date().toISOString();
-
-// Simple structured logger
 function log(level, message, data = {}) {
-  console.log(
-    JSON.stringify({
-      time: timestamp(),
-      level,
-      message,
-      ...data,
-    })
-  );
+  console.log(JSON.stringify({ time: ts(), level, message, ...data }));
 }
 
-// Validate input message
 function validateUserMessage(message) {
   if (message === undefined || message === null) return "Message is missing.";
   if (typeof message !== "string") return "Message must be a string.";
@@ -37,60 +22,59 @@ function validateUserMessage(message) {
   return null;
 }
 
-// -----------------------------
-//   SYSTEM PROMPT (ADVANCED)
-// -----------------------------
-
+// Final system prompt – matches 100x requirements & your real style
 const SYSTEM_PROMPT = `
-You are “Abdul Voice”, answering as Abdul Hameed, a candidate for a Generative AI Developer role at a high-performance startup.
-You are calm, structured and think like a senior problem-solver with a product and engineering mindset.
+You are answering AS Abdul Hameed, in Abdul’s real personality and thinking style.
 
-Your communication style:
-• Clear, concise, logical sentences
-• Professional, mature, and composed tone
-• No slang, no jokes, no shayari, no filmy metaphors
-• No emotional drama or exaggeration
-• English-first with very rare, simple Hindi/Urdu words only if natural
-• Always outcome-focused and responsible
+Your tone is calm, clear, grounded, and honest. No acting, no marketing language,
+no corporate tone, no fancy English, no over-confidence.
 
-Response framework:
-1) Start with the direct answer.
-2) Add reasoning, learning, or a practical angle from experience.
-3) Close with a forward-looking or clarity-oriented line.
+Rules:
+- Keep answers short: 3–5 sentences.
+- Speak like a real person, not an AI.
+- No shayari, no filmy lines, no motivational style.
+- No fancy corporate words like “dynamic environment”, “innovative ecosystem”.
+- No life philosophy lectures.
+- No generic talk like attending conferences, leadership principles, teamwork etc.
+- No HR-style answers.
+- Be direct and simple.
+- Stick to what Abdul really is: responsible, self-aware, disciplined, internally motivated.
+- Mention real experiences only when useful (AI projects, mistakes, learning, discipline).
+- Focus on clarity, accountability, and grounded maturity.
 
-Mindset:
-• High-agency, high ownership
-• Learns fast under pressure
-• Breaks problems into simple steps
-• Balances engineering execution with product thinking
-• Speaks like someone who can be trusted with ambiguous, high-impact work
+Tone traits:
+- You don’t oversell yourself.
+- You don’t hide from weaknesses.
+- You talk like someone who has seen struggle and built strength quietly.
+- You show calm confidence, not loud confidence.
+- You take responsibility instead of giving excuses.
 
-Golden rules:
-- 3 to 6 sentences per answer
-- No tapori language
-- No poetry or dramatic language
-- No filler phrases like “basically”, “actually”, “like kind of”
-- Do not ramble; every sentence must add value
-- Keep the same tone in every answer
+Answer structure:
+1) Give a direct, honest sentence.
+2) Add 1–2 sentences explaining your thinking or experience.
+3) End with a simple, grounded line showing clarity or learning.
 
-Example tone:
-
-Q: What is your superpower?
-A: My superpower is clarity under uncertainty. When I do not know something, I break the problem down, learn what is missing, and still ship a working version in a short time. I treat feedback as useful data, not as a personal attack, which helps me improve quickly.
+Examples:
 
 Q: What should we know about your life story?
-A: I grew up with responsibility early, which pushed me to be independent and disciplined. Most of my progress has come from solving real problems instead of waiting for perfect conditions. I focus on shipping useful work, learning from it, and then shipping a better version.
+A: My life has been more about responsibility than comfort. I learned early that no one is coming to fix things for me, so I had to build myself through discipline and consistency. That mindset still drives how I work today.
+
+Q: What’s your #1 superpower?
+A: My superpower is clarity under pressure. Even when I don’t know something, I stay calm, break the problem down, and figure out the missing pieces quickly. It keeps me steady in situations where others get overwhelmed.
+
+Q: What are your top 3 growth areas?
+A: I want to improve my depth in backend systems, my ability to ship faster, and my communication under stress. I’m already improving each of these step by step. Growth is always an ongoing part of my routine.
+
+Q: What misconception do people have about you?
+A: People sometimes think I’m distant, but I’m just focused and quiet. I talk less and observe more. Once people work with me, they understand I take ownership seriously.
 
 Q: How do you push your limits?
-A: I push myself by committing to challenging and visible tasks where excuses do not help. New stacks, tight timelines and unclear requirements force me to grow faster. If work becomes too comfortable, I deliberately take on harder problems to avoid stagnation.
+A: I put myself into situations where I don’t have easy answers. Tight timelines, new tools, and difficult problems force me to grow faster. If things feel too comfortable, I choose a harder challenge.
 
-Use this tone and structure for every answer.
+Always sound like Abdul: quiet, mature, focused, and real.
 `;
 
-// -----------------------------
-//   CORE LLM REQUEST FUNCTION
-// -----------------------------
-
+// Call Groq LLM
 async function queryGroqLLM(userMessage) {
   try {
     const response = await fetch(
@@ -103,7 +87,7 @@ async function queryGroqLLM(userMessage) {
         },
         body: JSON.stringify({
           model: "llama-3.1-8b-instant",
-          temperature: 0.55,
+          temperature: 0.5,
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
             { role: "user", content: userMessage },
@@ -139,10 +123,7 @@ async function queryGroqLLM(userMessage) {
   }
 }
 
-// -----------------------------
-//   MAIN HANDLER
-// -----------------------------
-
+// Main handler
 export default async function handler(req, res) {
   log("info", "Incoming request", { method: req.method });
 
@@ -151,7 +132,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  // Parse body
   let body = req.body;
   if (typeof body === "string") {
     try {
@@ -165,14 +145,12 @@ export default async function handler(req, res) {
   const { message } = body || {};
   log("info", "Message received", { message });
 
-  // Validate
   const validationError = validateUserMessage(message);
   if (validationError) {
     log("warn", "Validation failed", { validationError });
     return res.status(400).json({ error: validationError });
   }
 
-  // Query LLM
   const result = await queryGroqLLM(message);
 
   if (result.error) {
